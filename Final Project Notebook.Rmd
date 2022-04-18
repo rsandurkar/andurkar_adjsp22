@@ -1,0 +1,69 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+This is an [R Markdown](http://rmarkdown.rstudio.com) Notebook. When you execute code within the notebook, the results appear beneath the code. 
+
+Try executing this chunk by clicking the *Run* button within the chunk or by placing your cursor inside it and pressing *Cmd+Shift+Enter*. 
+
+```{r}
+library(tidyverse)
+library(janitor)
+```
+
+importing the data
+```{r}
+deaths9902 <- read_tsv("/Users/rsandurkar/Documents/Riddhi-ADJ-2022/data/Underlying Cause of Death1.txt")
+deaths0305 <- read_tsv("/Users/rsandurkar/Documents/Riddhi-ADJ-2022/data/Underlying Cause of Death2.txt")
+deaths0608 <- read_tsv("/Users/rsandurkar/Documents/Riddhi-ADJ-2022/data/Underlying Cause of Death3.txt")
+deaths0911 <- read_tsv("/Users/rsandurkar/Documents/Riddhi-ADJ-2022/data/Underlying Cause of Death4.txt")
+deaths1214 <- read_tsv("/Users/rsandurkar/Documents/Riddhi-ADJ-2022/data/Underlying Cause of Death5.txt")
+deaths1517 <- read_tsv("/Users/rsandurkar/Documents/Riddhi-ADJ-2022/data/Underlying Cause of Death6.txt")
+deaths1820 <- read_tsv("/Users/rsandurkar/Documents/Riddhi-ADJ-2022/data/Underlying Cause of Death7.txt")
+```
+
+```{r}
+alldeaths <- rbind(deaths9902, deaths0305, deaths0608, deaths0911, deaths1214, deaths1517, deaths1820) %>% clean_names()
+```
+
+```{r}
+notes <- alldeaths %>% filter(!is.na(notes)) %>% select(notes)
+alldeaths <- alldeaths %>% filter(is.na(notes))
+```
+
+
+Questions to answer:
+1. How many deaths in the U.S. per year?
+```{r}
+alldeaths %>% 
+  group_by(year) %>% 
+  
+```
+
+2. Which year had the most deaths?
+```{r}
+
+```
+
+3. What were the top three causes of death in 2020?
+```{r}
+
+```
+
+4. How have the top 3 causes of death changed from 1999?
+```{r}
+
+```
+
+5. What was the leading cause of death in MO each year?
+```{r}
+
+```
+
+6. How many people died by firearms in Missouri each year?
+```{r}
+
+```
+
+7. 
