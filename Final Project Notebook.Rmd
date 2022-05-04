@@ -33,37 +33,106 @@ alldeaths <- alldeaths %>% filter(is.na(notes))
 ```
 
 
+```{r}
+alldeaths <- alldeaths %>% mutate(num_deaths = as.numeric(deaths))
+alldeaths <- alldeaths %>% mutate(num_pop = as.numeric(population))
+```
+
+
 Questions to answer:
 1. How many deaths in the U.S. per year?
 ```{r}
 alldeaths %>% 
   group_by(year) %>% 
-  
+  summarise(total_deaths = sum(num_deaths, na.rm = TRUE))
 ```
 
 2. Which year had the most deaths?
+2020 had the most deaths.
 ```{r}
-
+alldeaths %>% 
+  group_by(year) %>% 
+  summarise(total_deaths = sum(num_deaths, na.rm = TRUE)) %>% 
+  arrange(desc(total_deaths))
 ```
 
 3. What were the top three causes of death in 2020?
+Heart disease, malignant neoplasm (aka cancer, according to a separate CDC report), and COVID-19 are the top three specified causes of death in 2020. This also was consistent with the simple list of the top 5 causes of death on the CDC website.
 ```{r}
-
+alldeaths %>% 
+  filter(year ==2020) %>% 
+  group_by(icd_10_113_cause_list, year) %>% 
+  summarise(total_deaths = sum(num_deaths, na.rm = TRUE)) %>%
+  arrange(desc(total_deaths))
 ```
 
-4. How have the top 3 causes of death changed from 1999?
+4. What were the top 3 causes of death in 1999?
 ```{r}
-
+alldeaths %>% 
+  filter(year ==1999) %>% 
+  group_by(icd_10_113_cause_list, year) %>% 
+  summarise(total_deaths = sum(num_deaths, na.rm = TRUE)) %>%
+  arrange(desc(total_deaths))
 ```
 
 5. What was the leading cause of death in MO each year?
+Major cardiovascular diseases appears to be the leading cause of death in Missouri each year since 1999.
 ```{r}
-
+alldeaths %>% 
+  filter(state == "Missouri") %>% 
+  group_by(icd_10_113_cause_list, year) %>% 
+  summarise(total_deaths = sum(num_deaths, na.rm = TRUE)) %>%
+  arrange(desc(total_deaths))
 ```
 
-6. How many people died by firearms in Missouri each year?
+6. How many people died of COVID-19 in Missouri in 2020?
 ```{r}
-
+alldeaths %>% 
+  filter(state == "Missouri", icd_10_113_cause_list=="#COVID-19 (U07.1)", year=="2020") %>% 
+  summarise(total_deaths = sum(num_deaths, na.rm = TRUE))
 ```
 
-7. 
+7. Which state reported the most COVID-19 deaths in 2020?
+```{r}
+alldeaths %>% 
+  filter(icd_10_113_cause_list=="#COVID-19 (U07.1)", year=="2020") %>%
+  group_by(state) %>% 
+  summarise(total_deaths = sum(num_deaths, na.rm = TRUE)) %>%
+  arrange(desc(total_deaths))
+```
+
+8. Which state had the highest deaths per 100,000 count for COVID-19?
+(rate = deaths per hundred thousand)
+New York was the highest deaths reported and also the highest deaths per hundred thousand in 2020.
+```{r}
+alldeaths %>% 
+  filter(icd_10_113_cause_list=="#COVID-19 (U07.1)", year=="2020") %>%
+  group_by(state, num_pop) %>% 
+  summarise(total_deaths = sum(num_deaths, na.rm = TRUE)) %>%
+  arrange(desc(total_deaths)) %>% 
+  mutate(rate = total_deaths / num_pop *100000) %>% 
+  arrange(desc(rate))
+```
+
+9. What were the most affected body systems in Missouri in 1999?
+Almost all of the causes of death listed in the first page are related to the cardiovascular system. Malignant neoplasms (cancer, more specifically lung and colorectal cancer) were next, along with cerebrovascular (which include stroke, aneurysms and carotid, intercranial and vertebral stenosis) and neurodegenerative diseases (Alzheimer's, Parkinson's) . The respiratory system was also one of the body systems affected. The digestive system (liver disease, cirrhosis) was also prominent, but did not have as many deaths as the cardiovascular and cerebrovascular systems.
+```{r}
+alldeaths %>% 
+  filter(year=="1999", state=="Missouri") %>% 
+  group_by(icd_10_113_cause_list) %>% 
+  summarise(total_deaths = sum(num_deaths, na.rm = TRUE)) %>% 
+  arrange(desc(total_deaths))
+```
+
+10. What were the most affected body systems in Missouri in 2020?
+Just like in 1999, the cardiovascular system is the most affected in terms of deaths in 2020. However, during this year, there were many deaths from COVID-19, which primarily affects the respiratory systems (lungs are the main organ affected by COVID-19)
+```{r}
+alldeaths %>% 
+  filter(year=="2020", state=="Missouri") %>% 
+  group_by(icd_10_113_cause_list) %>% 
+  summarise(total_deaths = sum(num_deaths, na.rm = TRUE)) %>% 
+  arrange(desc(total_deaths))
+```
+
+
+
